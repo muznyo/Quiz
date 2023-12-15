@@ -6,76 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body.dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-
-        body.dark-mode select {
-            background-color: #121212;
-            color: #ffffff;
-            border-color: #6c757d;
-        }
-
-        body.dark-mode .custom-file-input:lang(en)::after {
-            content: "Browse";
-            background-color: #121212;
-            color: #ffffff;
-            border-color: #6c757d;
-        }
-
-        body.dark-mode .custom-file-label {
-            background-color: #121212;
-            color: #ffffff;
-            border-color: #6c757d;
-        }
-
-        body {
-            padding-top: 60px;
-            /* Add padding to the top of the body to prevent overlap */
-        }
-
-        .correct-answer {
-            background-color: #155724;
-            /* light green */
-            /* color: #155724; */
-            /* dark green */
-        }
-
-        .incorrect-answer {
-            background-color: #721c24;
-            /* light red */
-            /* color: #721c24; */
-            /* dark red */
-        }
-
-        /* Light mode styles */
-        body.light-mode .dark-mode-toggle {
-            background-color: #fff;
-            color: #000;
-        }
-
-        /* Dark mode styles */
-        body.dark-mode .dark-mode-toggle {
-            background-color: #343a40;
-            color: #fff;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
+<!-- Custom JavaScript -->
+<script src="script.js"></script>
 
 <body>
-
     <!-- theme combobox and file selector -->
-    <div class="fixed-top d-flex justify-content-between p-3 ">
+    <div class="justify-content-between p-3 bg-light" id="navbar">
+        <!-- theme combobox and file selector -->
         <div class="container-fluid">
             <div class="row justify-content-around">
                 <div class="col-12 col-md-2 mb-2">
                     <h2 class="mb-0" id="quiz">Quiz</h2>
                 </div>
                 <div class="col-12 col-md-2 mb-2">
-                    <button class="btn btn-warning w-100" onclick="document.getElementById('customFile').click()">Choose
+                    <button class="btn btn-secondary w-100"
+                        onclick="document.getElementById('customFile').click()">Choose
                         file</button>
                     <div class="custom-file" style="display: none;">
                         <input type="file" class="custom-file-input" id="customFile" onchange="loadFile(event)">
@@ -89,7 +39,7 @@
                     <button class="btn btn-primary w-100" onclick="checkAnswers()">Check</button>
                 </div>
                 <div class="col-12 col-md-2 mb-2">
-                    <select id="darkModeSelect" class="custom-select w-100" onchange="changeMode()">
+                    <select id="darkModeSelect" class="form-select w-100" onchange="changeMode()">
                         <option value="light">Light Mode</option>
                         <option value="dark">Dark Mode</option>
                         <option value="system" selected>Follow System</option>
@@ -98,7 +48,8 @@
                 <div class="col-12 col-md-2 mb-2">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-default">Number of Questions</span>
+                            <span class="input-group-text" id="inputGroup-sizing-default">Number of
+                                Questions</span>
                         </div>
                         <input type="number" class="form-control dark-mode-toggle" aria-label="Default"
                             aria-describedby="inputGroup-sizing-default" id="numQuestions" min="1" value="10">
@@ -108,189 +59,12 @@
         </div>
     </div>
     <div id="questionsContainer"></div>
+    </nav>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        window.onload = function () {
-            const buttonsContainer = document.querySelector('.fixed-top');
-            const questionsContainer = document.getElementById('questionsContainer');
-            function updatePadding() {
-                questionsContainer.style.paddingTop = `${buttonsContainer.offsetHeight}px`;
-            }
-            updatePadding();
-            window.addEventListener('resize', updatePadding);
-
-            changeMode();  // Call the changeMode function here
-        }
-        let questions = [];
-
-        function loadFile(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                const contents = e.target.result;
-                parseQuestions(contents);
-            };
-
-            reader.readAsText(file);
-        }
-
-        function shuffle(array) {
-            let currentIndex = array.length, temporaryValue, randomIndex;
-
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
-            }
-
-            return array;
-        }
-
-        function parseQuestions(data) {
-            const lines = data.split('\n');
-            questions = [];
-            let currentQuestion = null;
-
-            lines.forEach(line => {
-                switch (line[0]) {
-                    case '#':
-                        currentQuestion = {
-                            question: line.slice(1).trim(),
-                            correctAnswers: [],
-                            incorrectAnswers: []
-                        };
-                        questions.push(currentQuestion);
-                        break;
-                    case '&':
-                        currentQuestion.correctAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
-                        break;
-                    case '!':
-                        currentQuestion.incorrectAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
-                        break;
-                }
-            });
-
-            questions = shuffle(questions);
-
-            displayQuestions();
-        }
-
-        function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
-            const questionsContainer = document.getElementById('questionsContainer');
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question';
-            questionDiv.style.margin = '20px 0';  // Add margin to the question
-            questionDiv.style.padding = '10px';  // Add padding to the question
-
-            const questionText = document.createElement('h3');
-            questionText.innerHTML = `<strong>${number}. Otázka</strong> <br>${question.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')}`;
-            questionDiv.appendChild(questionText);
-
-            // Check if there are both correct and incorrect answers
-            if (correctAnswers.length > 0 && incorrectAnswers.length > 0) {
-                let answers = [correctAnswers[0]];  // Start with the first correct answer
-
-                // Add the first incorrect answer if there is one
-                if (incorrectAnswers.length > 0) {
-                    answers.push(incorrectAnswers[0]);
-                }
-
-                // Add the rest of the answers
-                let remainingAnswers = correctAnswers.slice(1).concat(incorrectAnswers.slice(1));
-                while (answers.length < 4 && remainingAnswers.length > 0) {
-                    let randomIndex = Math.floor(Math.random() * remainingAnswers.length);
-                    answers.push(remainingAnswers[randomIndex]);
-                    remainingAnswers.splice(randomIndex, 1);  // Remove the selected answer from the remaining answers
-                }
-
-                // Shuffle the answers to be displayed
-                answers = shuffle(answers);
-
-                answers.forEach((answer, index) => {
-                    const answerDiv = document.createElement('div');
-                    answerDiv.className = 'form-check';
-                    answerDiv.style.margin = '10px 15px';  // Add margin to the answer
-                    answerDiv.style.padding = '5px';  // Add padding to the answer
-
-                    const input = document.createElement('input');
-                    input.type = 'checkbox';
-                    input.name = `q${number}`;
-                    input.id = `q${number}a${index}`;
-                    input.className = 'form-check-input';
-                    answerDiv.appendChild(input);
-
-                    const label = document.createElement('label');
-                    label.htmlFor = `q${number}a${index}`;
-                    label.className = 'form-check-label';
-                    // Replace "letter^something" with "letter<sup>something</sup>"
-                    label.innerHTML = answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>');
-                    answerDiv.appendChild(label);
-
-                    questionDiv.appendChild(answerDiv);
-                });
-            } else {
-                const paragraph = document.createElement('p');
-                paragraph.textContent = "No incorrect options right now";
-                questionDiv.appendChild(paragraph);
-            }
-
-            questionsContainer.appendChild(questionDiv);
-        }
-
-        function displayQuestions() {
-            const questionsContainer = document.getElementById('questionsContainer');
-            questionsContainer.innerHTML = '';
-            // Only take the first 10 questions
-            questions.slice(0, document.getElementById('numQuestions').value || questions.length).forEach((question, index) => {
-                displayQuestion(index + 1, question.question, question.correctAnswers, question.incorrectAnswers);
-            });
-        }
-        function checkAnswers() {
-            questions.forEach((question, questionIndex) => {
-                const inputs = document.querySelectorAll(`input[name="q${questionIndex + 1}"]`);
-
-                inputs.forEach((input, answerIndex) => {
-                    const label = document.querySelector(`label[for="q${questionIndex + 1}a${answerIndex}"]`);
-                    const isCorrect = question.correctAnswers.includes(label.innerHTML);
-
-                    // Add class to the label based on whether the answer is correct or not
-                    if (isCorrect) {
-                        label.classList.add('correct-answer');
-                    } else {
-                        label.classList.add('incorrect-answer');
-                    }
-                });
-            });
-        } function changeMode() {
-            const selectedMode = document.getElementById('darkModeSelect').value;
-            if (selectedMode === 'system') {
-                document.body.className = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark-mode' : '';
-            } else {
-                document.body.className = selectedMode === 'dark' ? 'dark-mode' : '';
-            }
-        }
-        function refreshQuestions() {
-            // Shuffle the questions before displaying them
-            questions = shuffle(questions);
-
-            const questionsContainer = document.getElementById('questionsContainer');
-            questionsContainer.innerHTML = '';
-            displayQuestions();
-        }
-    </script>
-
 </body>
 
 </html>
