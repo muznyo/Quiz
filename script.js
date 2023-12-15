@@ -75,18 +75,74 @@ function createElement(tag, attributes, children) {
     return element;
 }
 
-function displayQuestion(number, { question, correctAnswers, incorrectAnswers }) {
-    const questionDiv = createElement('div', { class: 'question', style: 'margin: 20px 0; padding: 10px' }, `
-        <h3><strong>${number}. Otázka</strong> <br>${question.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')}</h3>
-        ${correctAnswers.length > 0 && incorrectAnswers.length > 0 ? '<p>Answers are available</p>' : '<p>No incorrect options right now</p>'}
-    `);
+function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'question';
+    questionDiv.style.margin = '20px 0';  // Add margin to the question
+    questionDiv.style.padding = '10px';  // Add padding to the question
+
+    const questionText = document.createElement('h3');
+    questionText.innerHTML = `<strong>${number}. Otázka</strong> <br>${question.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')}`;
+    questionDiv.appendChild(questionText);
+
+    // Check if there are both correct and incorrect answers
+    if (correctAnswers.length > 0 && incorrectAnswers.length > 0) {
+        let answers = [correctAnswers[0]];  // Start with the first correct answer
+
+        // Add the first incorrect answer if there is one
+        if (incorrectAnswers.length > 0) {
+            answers.push(incorrectAnswers[0]);
+        }
+
+        // Add the rest of the answers
+        let remainingAnswers = correctAnswers.slice(1).concat(incorrectAnswers.slice(1));
+        while (answers.length < 4 && remainingAnswers.length > 0) {
+            let randomIndex = Math.floor(Math.random() * remainingAnswers.length);
+            answers.push(remainingAnswers[randomIndex]);
+            remainingAnswers.splice(randomIndex, 1);  // Remove the selected answer from the remaining answers
+        }
+
+        // Shuffle the answers to be displayed
+        answers = shuffle(answers);
+
+        answers.forEach((answer, index) => {
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'form-check';
+            answerDiv.style.margin = '10px 15px';  // Add margin to the answer
+            answerDiv.style.padding = '5px';  // Add padding to the answer
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = `q${number}`;
+            input.id = `q${number}a${index}`;
+            input.className = 'form-check-input';
+            answerDiv.appendChild(input);
+
+            const label = document.createElement('label');
+            label.htmlFor = `q${number}a${index}`;
+            label.className = 'form-check-label';
+            // Replace "letter^something" with "letter<sup>something</sup>"
+            label.innerHTML = answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>');
+            answerDiv.appendChild(label);
+
+            questionDiv.appendChild(answerDiv);
+        });
+    } else {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = "No incorrect options right now";
+        questionDiv.appendChild(paragraph);
+    }
+
     questionsContainer.appendChild(questionDiv);
 }
 
+
 function displayQuestions() {
+    const questionsContainer = document.getElementById('questionsContainer');
     questionsContainer.innerHTML = '';
     questions.slice(0, document.querySelector('#numQuestions').value || questions.length).forEach((question, index) => {
-        displayQuestion(index + 1, question);
+        displayQuestion(index + 1, question.question, question.correctAnswers, question.incorrectAnswers);
     });
 }
 
