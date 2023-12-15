@@ -75,9 +75,11 @@ function createElement(tag, attributes, children) {
     return element;
 }
 
+
 function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
     const questionsContainer = document.getElementById('questionsContainer');
     const questionDiv = document.createElement('div');
+    questionDiv.id = `q${number}`; // Add an id to the questionDiv
     questionDiv.className = 'question';
     questionDiv.style.margin = '20px 0';  // Add margin to the question
     questionDiv.style.padding = '10px';  // Add padding to the question
@@ -135,8 +137,9 @@ function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
     }
 
     questionsContainer.appendChild(questionDiv);
-}
 
+    return questionDiv;
+}
 
 function displayQuestions() {
     const questionsContainer = document.getElementById('questionsContainer');
@@ -146,8 +149,17 @@ function displayQuestions() {
     });
 }
 
+document.querySelector('#themeSelector').addEventListener('change', function () {
+    const theme = this.value;
+    const navbar = document.querySelector('#navbar');
+    navbar.className = '';  // Remove all current classes
+    navbar.classList.add('d-flex', 'justify-content-between', 'p-3', theme);
+});
+
 function checkAnswers() {
     questions.forEach((question, questionIndex) => {
+        let correctCount = 0; // Reset correctCount for each question
+        let correctSelectedCount = 0; // Reset correctSelectedCount for each question
         const inputs = document.querySelectorAll(`input[name="q${questionIndex + 1}"]`);
 
         inputs.forEach((input, answerIndex) => {
@@ -157,31 +169,52 @@ function checkAnswers() {
             // Add class to the label based on whether the answer is correct or not
             if (isCorrect) {
                 label.classList.add('correct-answer');
+                correctCount++; // Increment correctCount for each correct option
+                // If the answer is correct and the checkbox is checked, increment correctSelectedCount
+                if (input.checked) {
+                    correctSelectedCount++;
+                }
             } else {
                 label.classList.add('incorrect-answer');
             }
         });
+
+        // After checking all answers for a question, display the correctCount and correctSelectedCount under the question
+        const questionContainer = document.querySelector(`#q${questionIndex + 1}`);
+        // i dont want to always create new paragraph, just edit contents if it was generated already
+        let correctCountElement = questionContainer.querySelector('.correct-count');
+
+        if (!correctCountElement) {
+            correctCountElement = document.createElement('p');
+            correctCountElement.className = 'correct-count';
+            questionContainer.appendChild(correctCountElement);
+        }
+
+        correctCountElement.innerHTML = `<strong>${correctSelectedCount}/${correctCount} Correct</strong>`;
     });
-} document.querySelector('#themeSelector').addEventListener('change', function () {
-    const theme = this.value;
-    const navbar = document.querySelector('#navbar');
-    navbar.className = '';  // Remove all current classes
-    navbar.classList.add('d-flex', 'justify-content-between', 'p-3', theme);
-});
+}
 
 function changeMode() {
     const selectedMode = document.getElementById('darkModeSelect').value;
-    const navbar = document.querySelector('#navbar');
-    if (selectedMode === 'system') {
-        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.body.className = isDarkMode ? 'dark-mode' : '';
-        navbar.className = isDarkMode ? 'bg-dark' : 'bg-light';
-    } else {
-        document.body.className = selectedMode === 'dark' ? 'dark-mode' : '';
-        navbar.className = selectedMode === 'dark' ? 'bg-dark' : 'bg-light';
-    }
-    navbar.classList.add('d-flex', 'justify-content-between', 'p-3');
+    const isDarkMode = selectedMode === 'dark' || (selectedMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+
+    const elementsToChange = [document.querySelector('#navbar')];
+    elementsToChange.forEach(element => {
+        if (element.classList.contains('bg-dark')) {
+            element.classList.remove('bg-dark');
+        }
+        if (element.classList.contains('bg-light')) {
+            element.classList.remove('bg-light');
+        }
+        element.classList.add(isDarkMode ? 'bg-dark' : 'bg-light');
+    });
 }
+
+document.getElementById('darkModeSelect').addEventListener('change', changeMode);
+changeMode();
+
+
 function refreshQuestions() {
     // Shuffle the questions before displaying them
     questions = shuffle(questions);
