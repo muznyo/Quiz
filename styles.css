@@ -1,3 +1,38 @@
+.questions-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5vw 0.5vh;
+    /* Default padding for small devices */
+}
+
+@media (min-width: 576px) {
+    .questions-container {
+        padding: 5vw 10vh;
+        /* Increased padding for larger devices */
+    }
+}
+
+@media (min-width: 768px) {
+    .questions-container {
+        padding: 5vw 15vh;
+        /* Further increased padding for even larger devices */
+    }
+}
+
+@media (min-width: 992px) {
+    .questions-container {
+        padding: 5vw 20vh;
+        /* Even more padding for large devices */
+    }
+}
+
+@media (min-width: 1200px) {
+    .questions-container {
+        padding: 5vw 25vh;
+        /* Maximum padding for extra large devices */
+    }
+}
+
 html {
     scroll-behavior: smooth;
 }
