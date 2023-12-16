@@ -36,27 +36,16 @@ function shuffle(array) {
 }
 
 function parseQuestions(data) {
-    const lines = data.split('\n');
+    const parsedData = JSON.parse(data);
     questions = [];
-    let currentQuestion = null;
 
-    lines.forEach(line => {
-        switch (line[0]) {
-            case '?':
-                currentQuestion = {
-                    question: line.slice(1).trim(),
-                    correctAnswers: [],
-                    incorrectAnswers: []
-                };
-                questions.push(currentQuestion);
-                break;
-            case '+':
-                currentQuestion.correctAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
-                break;
-            case '-':
-                currentQuestion.incorrectAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
-                break;
-        }
+    parsedData.forEach(item => {
+        let currentQuestion = {
+            question: item.question,
+            correctAnswers: item.right_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')),
+            incorrectAnswers: item.wrong_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'))
+        };
+        questions.push(currentQuestion);
     });
 
     questions = shuffle(questions);
