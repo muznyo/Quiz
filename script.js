@@ -42,7 +42,7 @@ function parseQuestions(data) {
 
     lines.forEach(line => {
         switch (line[0]) {
-            case '#':
+            case '❓':
                 currentQuestion = {
                     question: line.slice(1).trim(),
                     correctAnswers: [],
@@ -50,10 +50,10 @@ function parseQuestions(data) {
                 };
                 questions.push(currentQuestion);
                 break;
-            case '&':
+            case '✔️':
                 currentQuestion.correctAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
                 break;
-            case '!':
+            case '❌':
                 currentQuestion.incorrectAnswers.push(line.slice(1).trim().replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'));
                 break;
         }
