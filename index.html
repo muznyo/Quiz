@@ -24,7 +24,7 @@
                     <h2 class="mb-0" id="quiz">Quiz</h2>
                 </div>
                 <div class="col-12 col-md-2 mb-2">
-                    <button class="btn btn-secondary w-100"
+                    <button class="btn btn-secondary w-100" id="fileButton"
                         onclick="document.getElementById('customFile').click()">Choose
                         file</button>
                     <div class="custom-file" style="display: none;">
@@ -33,19 +33,20 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-2 mb-2">
-                    <button class="btn btn-success w-100" onclick="refreshQuestions()">Refresh</button>
+                    <button class="btn btn-success w-100" id="refreshButton"
+                        onclick="refreshQuestions()">Refresh</button>
                 </div>
                 <div class="col-12 col-md-2 mb-2">
-                    <button class="btn btn-primary w-100" onclick="checkAnswers()">Check</button>
+                    <button class="btn btn-primary w-100" id="checkButton" onclick="checkAnswers()">Check</button>
                 </div>
-                <div class="col-12 col-md-2 mb-2">
-                    <select id="darkModeSelect" class="form-select w-100" onchange="changeMode()">
+                <div class="col-8 col-md-2 mb-2">
+                    <select id="themeSelect" class="form-select" onchange="changeMode()">
                         <option value="light">Light Mode</option>
                         <option value="dark">Dark Mode</option>
                         <option value="system" selected>Follow System</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-1 mb-2">
+                <div class="col-4 col-md-1">
                     <div class="input-group">
                         <input type="number" class="form-control dark-mode-toggle" aria-label="Default"
                             aria-describedby="inputGroup-sizing-default" id="numQuestions" min="1" value="10">

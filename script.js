@@ -184,9 +184,21 @@ function checkAnswers() {
 }
 
 function changeMode() {
-    const selectedMode = document.getElementById('darkModeSelect').value;
+    const selectedMode = document.getElementById('themeSelect').value;
     const isDarkMode = selectedMode === 'dark' || (selectedMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+
+    // Set the color-scheme property
+    document.documentElement.style.setProperty('color-scheme', isDarkMode ? 'dark' : 'light');
+
+    // Set the scrollbar color
+    if (isDarkMode) {
+        document.body.style.setProperty('--scrollbar-thumb-color', 'grey');
+        document.body.style.setProperty('--scrollbar-track-color', 'black');
+    } else {
+        document.body.style.setProperty('--scrollbar-thumb-color', 'darkgrey');
+        document.body.style.setProperty('--scrollbar-track-color', 'lightgrey');
+    }
 
     const elementsToChange = [document.querySelector('#navbar')];
     elementsToChange.forEach(element => {
@@ -200,9 +212,8 @@ function changeMode() {
     });
 }
 
-document.getElementById('darkModeSelect').addEventListener('change', changeMode);
+document.getElementById('themeSelect').addEventListener('change', changeMode);
 changeMode();
-
 
 function refreshQuestions() {
     // Shuffle the questions before displaying them
