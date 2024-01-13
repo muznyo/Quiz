@@ -42,8 +42,8 @@ function parseQuestions(data) {
     parsedData.forEach(item => {
         let currentQuestion = {
             question: item.question,
-            correctAnswers: item.right_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/<br>/g, '').replace(/>/g, '&gt;').replace(/</g, '&lt;')),
-            incorrectAnswers: item.wrong_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/<br>/g, '').replace(/>/g, '&gt;').replace(/</g, '&lt;'))
+            correctAnswers: item.right_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/&lt;sup&gt;/g, '<sup>').replace(/&lt;\/sup&gt;/g, '</sup>')),
+            incorrectAnswers: item.wrong_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/&lt;sup&gt;/g, '<sup>').replace(/&lt;\/sup&gt;/g, '</sup>'))
         };
         questions.push(currentQuestion);
     });
