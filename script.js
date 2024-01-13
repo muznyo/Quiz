@@ -42,12 +42,11 @@ function parseQuestions(data) {
     parsedData.forEach(item => {
         let currentQuestion = {
             question: item.question,
-            correctAnswers: item.right_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')),
-            incorrectAnswers: item.wrong_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>'))
+            correctAnswers: item.right_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/<br>/g, '').replace(/>/g, '&gt;').replace(/</g, '&lt;')),
+            incorrectAnswers: item.wrong_answers.map(answer => answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/<br>/g, '').replace(/>/g, '&gt;').replace(/</g, '&lt;'))
         };
         questions.push(currentQuestion);
     });
-
     questions = shuffle(questions);
 
     displayQuestions();
@@ -74,7 +73,7 @@ function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
     questionDiv.style.padding = '10px';  // Add padding to the question
 
     const questionText = document.createElement('h3');
-    questionText.innerHTML = `<strong>${number}. Otázka</strong> <br>${question.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>')}`;
+    questionText.innerHTML = `<strong>${number}. Otázka</strong> <br>${question.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/\n/g, '<br>')}`;
     questionDiv.appendChild(questionText);
 
     // Check if there are both correct and incorrect answers
@@ -114,7 +113,7 @@ function displayQuestion(number, question, correctAnswers, incorrectAnswers) {
             label.htmlFor = `q${number}a${index}`;
             label.className = 'form-check-label';
             // Replace "letter^something" with "letter<sup>something</sup>"
-            label.innerHTML = answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>');
+            label.innerHTML = answer.replace(/(\w)\^(\w+)/g, '$1<sup>$2</sup>').replace(/\n/g, '<br>');
             answerDiv.appendChild(label);
 
             questionDiv.appendChild(answerDiv);
@@ -147,19 +146,18 @@ document.querySelector('#themeSelector').addEventListener('change', function () 
 
 function checkAnswers() {
     questions.forEach((question, questionIndex) => {
-        let correctCount = 0; // Reset correctCount for each question
-        let correctSelectedCount = 0; // Reset correctSelectedCount for each question
+        let correctCount = 0;
+        let correctSelectedCount = 0;
         const inputs = document.querySelectorAll(`input[name="q${questionIndex + 1}"]`);
 
         inputs.forEach((input, answerIndex) => {
             const label = document.querySelector(`label[for="q${questionIndex + 1}a${answerIndex}"]`);
-            const isCorrect = question.correctAnswers.includes(label.textContent);
+            const labelText = label.innerHTML.trim().toLowerCase().replace(/<br>/g, '\n');
+            const isCorrect = question.correctAnswers.map(answer => answer.trim().toLowerCase()).includes(labelText);
 
-            // Add class to the label based on whether the answer is correct or not
             if (isCorrect) {
                 label.classList.add('correct-answer');
-                correctCount++; // Increment correctCount for each correct option
-                // If the answer is correct and the checkbox is checked, increment correctSelectedCount
+                correctCount++;
                 if (input.checked) {
                     correctSelectedCount++;
                 }
@@ -168,9 +166,7 @@ function checkAnswers() {
             }
         });
 
-        // After checking all answers for a question, display the correctCount and correctSelectedCount under the question
         const questionContainer = document.querySelector(`#q${questionIndex + 1}`);
-        // i dont want to always create new paragraph, just edit contents if it was generated already
         let correctCountElement = questionContainer.querySelector('.correct-count');
 
         if (!correctCountElement) {
@@ -182,7 +178,6 @@ function checkAnswers() {
         correctCountElement.innerHTML = `<strong>${correctSelectedCount}/${correctCount} Correct</strong>`;
     });
 }
-
 function changeMode() {
     const selectedMode = document.getElementById('themeSelect').value;
     const isDarkMode = selectedMode === 'dark' || (selectedMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
