@@ -153,7 +153,7 @@ function checkAnswers() {
 
         inputs.forEach((input, answerIndex) => {
             const label = document.querySelector(`label[for="q${questionIndex + 1}a${answerIndex}"]`);
-            const isCorrect = question.correctAnswers.includes(label.innerHTML);
+            const isCorrect = question.correctAnswers.includes(label.textContent);
 
             // Add class to the label based on whether the answer is correct or not
             if (isCorrect) {
