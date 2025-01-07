@@ -164,16 +164,16 @@ function checkAnswers() {
             var labelText = label.innerHTML.trim().toLowerCase().replace(/<br>/g, '\n');
             var isCorrect = question.correctAnswers.map(function (answer) {
                 return answer.trim().toLowerCase();
-            }).includes(labelText);
+            }).indexOf(labelText) !== -1;
 
             if (isCorrect) {
-                label.classList.add('correct-answer');
+                label.className += ' correct-answer';
                 correctCount++;
                 if (input.checked) {
                     correctSelectedCount++;
                 }
             } else {
-                label.classList.add('incorrect-answer');
+                label.className += ' incorrect-answer';
             }
         }
 
@@ -258,6 +258,95 @@ if (!Array.prototype.includes) {
 
         return false;
     };
+}
+
+// Polyfill for Array.prototype.map
+if (!Array.prototype.map) {
+    Array.prototype.map = function (callback, thisArg) {
+        var T, A, k;
+
+        if (this == null) {
+            throw new TypeError('this is null or not defined');
+        }
+
+        var O = Object(this);
+        var len = O.length >>> 0;
+
+        if (typeof callback !== 'function') {
+            throw new TypeError(callback + ' is not a function');
+        }
+
+        if (arguments.length > 1) {
+            T = thisArg;
+        }
+
+        A = new Array(len);
+        k = 0;
+
+        while (k < len) {
+            var kValue, mappedValue;
+
+            if (k in O) {
+                kValue = O[k];
+                mappedValue = callback.call(T, kValue, k, O);
+                A[k] = mappedValue;
+            }
+            k++;
+        }
+
+        return A;
+    };
+}
+
+// Polyfill for Element.classList
+if (!("classList" in document.documentElement)) {
+    Object.defineProperty(HTMLElement.prototype, 'classList', {
+        get: function () {
+            var self = this;
+            function update(fn) {
+                return function (value) {
+                    var classes = self.className.split(/\s+/),
+                        index = classes.indexOf(value);
+
+                    fn(classes, index, value);
+                    self.className = classes.join(" ");
+                };
+            }
+
+            var ret = {
+                add: update(function (classes, index, value) {
+                    if (!~index) classes.push(value);
+                }),
+
+                remove: update(function (classes, index) {
+                    if (~index) classes.splice(index, 1);
+                }),
+
+                toggle: update(function (classes, index, value) {
+                    if (~index)
+                        classes.splice(index, 1);
+                    else
+                        classes.push(value);
+                }),
+
+                contains: function (value) {
+                    return !!~self.className.split(/\s+/).indexOf(value);
+                },
+
+                item: function (i) {
+                    return self.className.split(/\s+/)[i] || null;
+                }
+            };
+
+            Object.defineProperty(ret, 'length', {
+                get: function () {
+                    return self.className.split(/\s+/).length;
+                }
+            });
+
+            return ret;
+        }
+    });
 }
 
 // Polyfill for Object.assign

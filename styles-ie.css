@@ -61,7 +61,6 @@ html {
 body.dark-mode {
     background-color: #121212;
     color: #ffffff;
-    filter: invert(1) hue-rotate(180deg);
 }
 
 body.dark-mode select {
