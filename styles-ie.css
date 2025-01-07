@@ -1,0 +1,125 @@
+.questions-container {
+    display: flex;
+    flex-direction: column;
+    margin: 3vh;
+    /* Default padding for small devices */
+}
+
+@media (min-width: 576px) {
+    .questions-container {
+        margin: 3vh;
+        /* Increased padding for larger devices */
+    }
+
+    #fileButton,
+    #checkButton,
+    #refreshButton,
+    #themeSelect {
+        min-width: 120px;
+        /* Adjust as needed */
+    }
+
+    #numQuestions {
+        min-width: 60px;
+        /* Adjust as needed */
+    }
+}
+
+@media (min-width: 768px) {
+    .questions-container {
+        margin: 3vh 20%;
+        /* Further increased padding for even larger devices */
+    }
+}
+
+@media (min-width: 992px) {
+    .questions-container {
+        margin: 3vh 20%;
+        /* Even more padding for large devices */
+    }
+}
+
+@media (min-width: 1200px) {
+    .questions-container {
+        margin: 3vh 30%;
+        /* Maximum padding for extra large devices */
+    }
+}
+
+html {
+    /* Removed scroll-behavior for IE compatibility */
+}
+
+.light {
+    background-color: #f8f9fa;
+}
+
+.dark {
+    background-color: #202020;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+    filter: invert(1) hue-rotate(180deg);
+}
+
+body.dark-mode select {
+    background-color: #121212;
+    color: #ffffff;
+    border-color: #6c757d;
+}
+
+body.dark-mode .custom-file-input:lang(en)::after {
+    content: "Browse";
+    background-color: #121212;
+    color: #ffffff;
+    border-color: #6c757d;
+}
+
+body.dark-mode .custom-file-label {
+    background-color: #121212;
+    color: #ffffff;
+    border-color: #6c757d;
+}
+
+body.light-mode .correct-answer {
+    background-color: #d4edda;
+    /* dark green */
+    color: #155724;
+    /* light green */
+}
+
+body.light-mode .incorrect-answer {
+    background-color: #f8d7da;
+    /* dark red */
+    color: #721c24;
+    /* light red */
+}
+
+body.dark-mode .correct-answer {
+    background-color: #155724;
+    /* light green */
+    color: #d4edda;
+    /* dark green */
+}
+
+body.dark-mode .incorrect-answer {
+    background-color: #721c24;
+    /* light red */
+    color: #f8d7da;
+    /* dark red */
+}
+
+/* Light mode styles */
+body.light-mode .dark-mode-toggle {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Dark mode styles */
+body.dark-mode .dark-mode-toggle {
+    background-color: #121212;
+    border-color: #6c757d;
+    color: #fff;
+}

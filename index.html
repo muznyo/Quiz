@@ -23,6 +23,36 @@
                 });
             });
         }
+
+        function loadScript(src) {
+            var script = document.createElement('script');
+            script.src = src;
+            document.head.appendChild(script);
+        }
+
+        function loadStylesheet(href) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = href;
+            document.head.appendChild(link);
+        }
+
+        function isInternetExplorerOrEdge() {
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf('MSIE '); // Detect IE <= 10
+            var trident = ua.indexOf('Trident/'); // Detect IE 11
+            var edge = ua.indexOf('Edge/'); // Detect EdgeHTML
+            return msie > -1 || trident > -1 || edge > -1;
+        }
+
+        if (isInternetExplorerOrEdge()) {
+            loadScript('script-ie.js'); // Load IE/Edge-compatible script
+            loadStylesheet('styles-ie.css'); // Load IE/Edge-compatible styles
+        } else {
+            loadScript('script.js'); // Load modern script
+            loadStylesheet('styles.css'); // Load modern styles
+        }
+
     </script>
 </head>
 <!-- Custom JavaScript -->
