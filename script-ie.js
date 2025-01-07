@@ -151,7 +151,20 @@ document.querySelector('#themeSelector').addEventListener('change', function () 
     navbar.classList.add('d-flex', 'justify-content-between', 'p-3', theme);
 });
 
-function checkAnswers() {
+function isInternetExplorer() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf('MSIE '); // Detect IE <= 10
+    var trident = ua.indexOf('Trident/'); // Detect IE 11
+    return msie > -1 || trident > -1;
+}
+
+function isEdgeHTML() {
+    var ua = window.navigator.userAgent;
+    var edge = ua.indexOf('Edge/'); // Detect EdgeHTML
+    return edge > -1;
+}
+
+function checkAnswersIE() {
     for (var questionIndex = 0; questionIndex < questions.length; questionIndex++) {
         var question = questions[questionIndex];
         var correctCount = 0;
@@ -187,6 +200,61 @@ function checkAnswers() {
         }
 
         correctCountElement.innerHTML = '<strong>' + correctSelectedCount + '/' + correctCount + ' Correct</strong>';
+    }
+}
+
+function checkAnswersEdge() {
+    console.log("Checking answers...");
+    for (var questionIndex = 0; questionIndex < questions.length; questionIndex++) {
+        var question = questions[questionIndex];
+        var correctCount = 0;
+        var correctSelectedCount = 0;
+        var inputs = document.querySelectorAll('input[name="q' + (questionIndex + 1) + '"]');
+        console.log("Question " + (questionIndex + 1) + ": found " + inputs.length + " inputs.");
+
+        for (var answerIndex = 0; answerIndex < inputs.length; answerIndex++) {
+            var input = inputs[answerIndex];
+            var label = document.querySelector('label[for="q' + (questionIndex + 1) + 'a' + answerIndex + '"]');
+            var labelText = label.innerHTML.trim().toLowerCase().replace(/<br>/g, '\n');
+            console.log("Answer " + (answerIndex + 1) + ": " + labelText);
+
+            var isCorrect = question.correctAnswers.map(function (answer) {
+                return answer.trim().toLowerCase();
+            }).indexOf(labelText) !== -1;
+
+            if (isCorrect) {
+                label.className += ' correct-answer';
+                correctCount++;
+                if (input.checked) {
+                    correctSelectedCount++;
+                }
+            } else {
+                label.className += ' incorrect-answer';
+            }
+        }
+
+        var questionContainer = document.querySelector('#q' + (questionIndex + 1));
+        var correctCountElement = questionContainer.querySelector('.correct-count');
+
+        if (!correctCountElement) {
+            correctCountElement = document.createElement('p');
+            correctCountElement.className = 'correct-count';
+            questionContainer.appendChild(correctCountElement);
+        }
+
+        correctCountElement.innerHTML = '<strong>' + correctSelectedCount + '/' + correctCount + ' Correct</strong>';
+        console.log("Question " + (questionIndex + 1) + ": " + correctSelectedCount + "/" + correctCount + " correct.");
+    }
+}
+
+function checkAnswers() {
+    if (isInternetExplorer()) {
+        checkAnswersIE();
+    } else if (isEdgeHTML()) {
+        checkAnswersEdge();
+    } else {
+        // Default to EdgeHTML solution if neither IE nor EdgeHTML is detected
+        checkAnswersEdge();
     }
 }
 
